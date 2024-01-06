@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
 import { ref } from "vue";
+
+const router = useRouter();
+
 const userName = ref("");
 const userPassword = ref("");
 const userEmail = ref("");
@@ -31,9 +35,12 @@ async function initInstructorList() {
       instructorList.value.pop();
       for (let i = 0; i < data.length; i++) {
         //instructorListID.value.push(data[i][0]);
-        instructorList.value.push(data[i]);
+        instructorList.value.push([
+          data[i].USER_ID,
+          data[i].FIRST_NAME,
+          data[i].LAST_NAME,
+        ]);
       }
-      console.log(data.length);
       loading.value = false;
     })
     .catch((error) => {
@@ -79,6 +86,7 @@ async function submitStudent() {
     })
     .then((data) => {
       console.log(data);
+      router.push("/home");
     })
     .catch((error) => {
       console.error("Error fetching data:", error);
@@ -122,6 +130,7 @@ async function submitInstructor() {
     })
     .then((data) => {
       console.log(data);
+      router.push("/");
     })
     .catch((error) => {
       console.error("Error fetching data:", error);

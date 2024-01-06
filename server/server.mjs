@@ -5,6 +5,10 @@ import cors from "cors";
 const app = express();
 const port = 3000;
 
+oracledb.outFormat = oracledb.OUT_FORMAT_OBJECT;
+
+oracledb.fetchAsString = [oracledb.CLOB];
+
 app.use(cors());
 
 app.use(express.urlencoded({ extended: true }));
@@ -16,6 +20,64 @@ const dbConfig = {
   password: "bd157",
   connectString: "bd-dc.cs.tuiasi.ro:1539/orcl",
 };
+
+app.get("/api/studentLogin", async (req, res) => {
+  let connection;
+
+  try {
+    // Establish a direct connection to the database
+    connection = await oracledb.getConnection(dbConfig);
+
+    const sqlQuery = `SELECT * FROM student_details WHERE student_id = :data`;
+
+    // Execute the SQL query
+    const result = await connection.execute(sqlQuery);
+
+    // Send the results as JSON
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error executing query:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      // Close the connection
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+});
+
+app.get("/api/instructorLogin", async (req, res) => {
+  let connection;
+
+  try {
+    // Establish a direct connection to the database
+    connection = await oracledb.getConnection(dbConfig);
+
+    const sqlQuery = `SELECT * FROM instructor_details`;
+
+    // Execute the SQL query
+    const result = await connection.execute(sqlQuery);
+
+    // Send the results as JSON
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error executing query:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    if (connection) {
+      // Close the connection
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error("Error closing connection:", err);
+      }
+    }
+  }
+});
 
 app.get("/api/instructor_details", async (req, res) => {
   let connection;
@@ -328,11 +390,88 @@ app.post("/api/login", express.json(), async (req, res) => {
 
     const queryResult = await fetchDataForLogin(receivedData);
 
-    // Send the query result as JSON
     res.json({ result: queryResult });
   } catch (error) {
     console.error("Error processing request:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/logInStudent", async (req, res) => {
+  try {
+    const data = req.body;
+
+    const sqlQuery = `SELECT * FROM student_details WHERE STUDENT_ID = :data`;
+
+    let connection;
+
+    try {
+      // Establish a direct connection to the database
+      connection = await oracledb.getConnection(dbConfig);
+
+      // Customize the SQL query based on the received data
+
+      await connection.execute(sqlQuery, {data});
+
+      await connection.commit();
+      // Return the query result
+    } catch (err) {
+      console.error("Error executing query:", err);
+      throw new Error("Database error");
+    } finally {
+      if (connection) {
+        // Close the connection
+        try {
+          await connection.close();
+        } catch (err) {
+          console.error("Error closing connection:", err);
+        }
+      }
+    }
+
+    res.json({ success: true, message: "User inserted successfully" });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/logInInstructor", async (req, res) => {
+  try {
+    const data = req.body;
+
+    const sqlQuery = `SELECT * FROM instructor_details WHERE INSTRUCTOR_ID = :data`;
+
+    let connection;
+
+    try {
+      // Establish a direct connection to the database
+      connection = await oracledb.getConnection(dbConfig);
+
+      // Customize the SQL query based on the received data
+
+      await connection.execute(sqlQuery, {data});
+
+      await connection.commit();
+      // Return the query result
+    } catch (err) {
+      console.error("Error executing query:", err);
+      throw new Error("Database error");
+    } finally {
+      if (connection) {
+        // Close the connection
+        try {
+          await connection.close();
+        } catch (err) {
+          console.error("Error closing connection:", err);
+        }
+      }
+    }
+
+    res.json({ success: true, message: "User inserted successfully" });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
 

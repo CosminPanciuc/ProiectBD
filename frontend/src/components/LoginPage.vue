@@ -1,7 +1,7 @@
 <template>
   <div style="app">
     <span>Connect</span>
-
+    <span v-if="isActive" class="spanErr">Nume sau parola gresita</span>
     <input v-model="userName" autofocus placeholder="user" />
     <input
       v-model="userPassword"
@@ -19,7 +19,9 @@
 <script lang="ts" setup>
 import { useRouter } from "vue-router";
 import { ref } from "vue";
-import { userID } from "./../stores/user";
+import { studentUserData } from "./../stores/user";
+import { instructorUserData } from "./../stores/user";
+import { conUserData } from "./../stores/user";
 
 const router = useRouter();
 
@@ -27,11 +29,11 @@ const userName = ref("");
 const userPassword = ref("");
 const isActive = ref(false);
 
-function userLogin() {
+async function userLogin() {
   const postLoginData = {
     data: userName.value,
   };
-  fetch("http://localhost:3000/api/login", {
+  await fetch("http://localhost:3000/api/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -45,15 +47,49 @@ function userLogin() {
       return response.json();
     })
     .then((data) => {
-      console.log(data.result);
-      if (data.result.length < 1) {
+      const result = data.result[0];
+      if (result == undefined) {
         isActive.value = true;
         console.log("FAIL");
-        console.log(data);
       } else {
-        const [[dbUserID, dbusername, dbpassword]] = data.result;
-        userID.value = dbUserID;
-        if (dbusername == userName.value && dbpassword == userPassword.value) {
+        if (result.USER_TYPE == 0) {
+          const newUser: instructorUserData = {
+            id: result.USER_ID,
+            username: result.USERNAME,
+            password: result.USER_PASSWORD,
+            type: result.USER_TYPE,
+            birthDate: new Date(result.BIRTH_DATE),
+            number: result.PHONE_NUMBER,
+            firstName: result.FIRST_NAME,
+            lastName: result.LAST_NAME,
+            email: result.EMAIL,
+            plateNumber: "",
+            carBrand: "",
+            carModel: "",
+          };
+          conUserData.value = newUser;
+        } else {
+          const newUser: studentUserData = {
+            id: result.USER_ID,
+            username: result.USERNAME,
+            password: result.USER_PASSWORD,
+            type: result.USER_TYPE,
+            birthDate: new Date(result.BIRTH_DATE),
+            number: result.PHONE_NUMBER,
+            firstName: result.FIRST_NAME,
+            lastName: result.LAST_NAME,
+            email: result.EMAIL,
+            instructorID: 0,
+            expirationDate: new Date(),
+            coursesLeft: 0,
+          };
+          conUserData.value = newUser;
+        }
+
+        if (
+          result.USERNAME == userName.value &&
+          result.USER_PASSWORD == userPassword.value
+        ) {
           router.push("/home");
         } else isActive.value = true;
       }
