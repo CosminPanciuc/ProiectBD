@@ -86,7 +86,7 @@ async function submitStudent() {
     })
     .then((data) => {
       console.log(data);
-      router.push("/home");
+      router.push("/");
     })
     .catch((error) => {
       console.error("Error fetching data:", error);

@@ -58,7 +58,7 @@ async function userLogin() {
             username: result.USERNAME,
             password: result.USER_PASSWORD,
             type: result.USER_TYPE,
-            birthDate: new Date(result.BIRTH_DATE),
+            birthDate: new Date(result.BIRTH_DATE).toISOString().split("T")[0],
             number: result.PHONE_NUMBER,
             firstName: result.FIRST_NAME,
             lastName: result.LAST_NAME,
@@ -74,13 +74,13 @@ async function userLogin() {
             username: result.USERNAME,
             password: result.USER_PASSWORD,
             type: result.USER_TYPE,
-            birthDate: new Date(result.BIRTH_DATE),
+            birthDate: new Date(result.BIRTH_DATE).toISOString().split("T")[0],
             number: result.PHONE_NUMBER,
             firstName: result.FIRST_NAME,
             lastName: result.LAST_NAME,
             email: result.EMAIL,
             instructorID: 0,
-            expirationDate: new Date(),
+            expirationDate: new Date().toISOString().split("T")[0],
             coursesLeft: 0,
           };
           conUserData.value = newUser;
@@ -115,7 +115,7 @@ input {
 }
 button {
   display: block;
-  width: 100%; /* Set the width to 50% of the parent container */
+  width: 100%;
 }
 span {
   display: block;

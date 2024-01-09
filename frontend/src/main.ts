@@ -5,6 +5,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import LoginPage from "./components/LoginPage.vue";
 import HomePage from "./components/HomePage.vue";
 import CreateAcc from "./components/CreateAcc.vue";
+import Scheduale from "./components/Scheduale.vue";
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -12,6 +13,7 @@ const router = createRouter({
     { path: "/", component: LoginPage },
     { path: "/home", component: HomePage },
     { path: "/register", component: CreateAcc },
+    { path: "/scheduale", component: Scheduale },
   ],
 });
 

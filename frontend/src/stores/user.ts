@@ -5,13 +5,13 @@ export type studentUserData = {
   username: string;
   password: string;
   type: number;
-  birthDate: Date;
+  birthDate: string;
   number: string;
   firstName: string;
   lastName: string;
   email: string;
   instructorID: number;
-  expirationDate: Date;
+  expirationDate: string;
   coursesLeft: number;
 };
 
@@ -20,7 +20,7 @@ export type instructorUserData = {
   username: string;
   password: string;
   type: number;
-  birthDate: Date;
+  birthDate: string;
   number: string;
   firstName: string;
   lastName: string;
